@@ -1,0 +1,3070 @@
+<!DOCTYPE html>
+<!-- saved from url=(0045)https://mono-resume.github.io/resume-builder/ -->
+<html lang="uk" data-lt-installed="true"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+    <title>monobank — Конструктор резюме</title>
+    <meta name="theme-color" content="#0a0612">
+    <link href="./генератор_files/css2" rel="stylesheet">
+    <script src="./генератор_files/jspdf.umd.min.js.завантаження"></script>
+    <script src="./генератор_files/html2canvas.min.js.завантаження"></script>
+    <style>
+      :root {
+        --bg: #0a0612;
+        --surface: rgba(255, 255, 255, 0.03);
+        --surface-2: rgba(255, 255, 255, 0.05);
+        --border: rgba(255, 255, 255, 0.08);
+        --border-hover: rgba(255, 255, 255, 0.18);
+        --text: #ffffff;
+        --text-muted: #9999b0;
+        --accent: #ff6b81;
+        --accent-2: #c66dff;
+        --glow: rgba(198, 109, 255, 0.45);
+        --error: #ff6b81;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      *:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 3px;
+        border-radius: 8px;
+      }
+
+      body {
+        font-family:
+          "Inter",
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+        background-color: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+        -webkit-font-smoothing: antialiased;
+        overflow-x: hidden;
+        position: relative;
+      }
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background:
+          radial-gradient(
+            ellipse 800px 600px at 80% 10%,
+            rgba(255, 107, 129, 0.18),
+            transparent 60%
+          ),
+          radial-gradient(
+            ellipse 700px 500px at 10% 50%,
+            rgba(198, 109, 255, 0.15),
+            transparent 60%
+          );
+        pointer-events: none;
+        z-index: -1;
+      }
+
+      .container {
+        width: 100%;
+        max-width: 880px;
+        margin: 0 auto;
+        padding: 28px 20px 80px;
+        position: relative;
+      }
+
+      .progress-container {
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.04),
+          rgba(255, 255, 255, 0.015)
+        );
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        padding: 16px 22px;
+        margin-bottom: 24px;
+      }
+      .progress-info {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+        gap: 12px;
+      }
+      .progress-label {
+        color: var(--text);
+        font-weight: 600;
+        font-size: 14px;
+        letter-spacing: -0.01em;
+      }
+      .progress-percent {
+        color: var(--accent);
+        font-weight: 700;
+        font-size: 13px;
+        white-space: nowrap;
+      }
+      .progress-bar {
+        background: rgba(255, 255, 255, 0.06);
+        height: 8px;
+        border-radius: 4px;
+        overflow: hidden;
+      }
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--accent), var(--accent-2));
+        width: 0%;
+        transition: width 0.6s ease;
+        box-shadow: 0 0 12px rgba(255, 107, 129, 0.5);
+      }
+
+      .achievements {
+        display: none;
+      }
+
+      .quest-card {
+        position: relative;
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.04) 0%,
+          rgba(255, 255, 255, 0.015) 100%
+        );
+        border: 1px solid var(--border);
+        border-radius: 24px;
+        padding: 38px 32px;
+        overflow: hidden;
+        animation: slideIn 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+      }
+      .quest-card::before {
+        content: "";
+        position: absolute;
+        bottom: -50%;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 70%;
+        height: 70%;
+        background: var(--glow);
+        border-radius: 50%;
+        filter: blur(80px);
+        opacity: 0.35;
+        pointer-events: none;
+        z-index: 0;
+      }
+      .quest-card > * {
+        position: relative;
+        z-index: 1;
+      }
+
+      @keyframes slideIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .quest-icon {
+        font-size: 48px;
+        text-align: center;
+        margin-bottom: 14px;
+      }
+      .quest-number {
+        color: var(--accent);
+        font-size: 11px;
+        text-align: center;
+        text-transform: uppercase;
+        letter-spacing: 2.5px;
+        font-weight: 700;
+        margin-bottom: 10px;
+      }
+      .quest-question {
+        font-size: 22px;
+        text-align: center;
+        margin-bottom: 8px;
+        font-weight: 700;
+        letter-spacing: -0.01em;
+      }
+      .quest-hint {
+        color: var(--text-muted);
+        text-align: center;
+        font-size: 14px;
+        margin-bottom: 26px;
+      }
+
+      .input-field,
+      .textarea-field {
+        width: 100%;
+        padding: 14px 18px;
+        background: rgba(0, 0, 0, 0.35);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        color: var(--text);
+        font-size: 15px;
+        font-family: inherit;
+        transition: all 0.3s;
+      }
+      .input-field:focus,
+      .textarea-field:focus {
+        outline: none;
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(255, 107, 129, 0.15);
+      }
+      .textarea-field {
+        min-height: 120px;
+        resize: vertical;
+      }
+
+      .dob-date {
+        width: 100%;
+        padding: 14px 18px;
+        background: rgba(0, 0, 0, 0.35);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        color: var(--text);
+        font-size: 15px;
+        font-family: inherit;
+        cursor: pointer;
+        transition: all 0.3s;
+        margin-bottom: 14px;
+        color-scheme: dark;
+      }
+      .dob-date:focus {
+        outline: none;
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(255, 107, 129, 0.15);
+      }
+      .dob-date::-webkit-calendar-picker-indicator {
+        filter: invert(1) brightness(1.6);
+        cursor: pointer;
+      }
+      .age-display {
+        text-align: center;
+        margin-top: 10px;
+        padding: 12px;
+        background: rgba(255, 107, 129, 0.08);
+        border: 1px solid rgba(255, 107, 129, 0.22);
+        border-radius: 12px;
+        color: var(--accent);
+        font-size: 14px;
+        font-weight: 600;
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .age-display.empty {
+        color: var(--text-muted);
+        background: rgba(255, 255, 255, 0.03);
+        border-color: var(--border);
+        font-weight: 400;
+      }
+
+      .field-label {
+        display: block;
+        color: var(--accent);
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        margin-bottom: 7px;
+        font-weight: 700;
+      }
+      .field-group {
+        margin-bottom: 14px;
+      }
+
+      .choice-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+        gap: 12px;
+        margin-bottom: 10px;
+      }
+      .choice-btn {
+        padding: 18px 16px;
+        background: rgba(0, 0, 0, 0.35);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        color: var(--text);
+        font-size: 14px;
+        font-family: inherit;
+        cursor: pointer;
+        transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+        text-align: center;
+        font-weight: 500;
+        line-height: 1.35;
+      }
+      .choice-btn:hover {
+        border-color: var(--border-hover);
+        background: rgba(255, 255, 255, 0.05);
+        transform: translateY(-2px);
+      }
+      .choice-btn.selected {
+        border-color: var(--accent);
+        background: linear-gradient(
+          135deg,
+          rgba(255, 107, 129, 0.18),
+          rgba(198, 109, 255, 0.1)
+        );
+        color: #fff;
+        box-shadow: 0 6px 20px rgba(255, 107, 129, 0.25);
+        font-weight: 600;
+      }
+      .choice-icon {
+        display: block;
+        font-size: 26px;
+        margin-bottom: 8px;
+      }
+
+      .skip-btn {
+        width: 100%;
+        background: transparent;
+        border: 1px dashed var(--border-hover);
+        color: var(--text-muted);
+        padding: 14px;
+        border-radius: 12px;
+        cursor: pointer;
+        font-size: 14px;
+        font-family: inherit;
+        transition: all 0.3s;
+        margin-top: 14px;
+        font-weight: 500;
+      }
+      .skip-btn:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+        background: rgba(255, 107, 129, 0.05);
+      }
+      .skip-btn.active {
+        border-style: solid;
+        border-color: var(--accent);
+        background: rgba(255, 107, 129, 0.1);
+        color: var(--accent);
+      }
+
+      .entry-block {
+        background: rgba(0, 0, 0, 0.25);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 22px;
+        margin-bottom: 14px;
+        position: relative;
+      }
+      .entry-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid var(--border);
+      }
+      .entry-title {
+        color: var(--accent);
+        font-weight: 700;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 1.8px;
+      }
+      .remove-btn {
+        background: transparent;
+        border: 1px solid var(--border);
+        color: var(--text-muted);
+        border-radius: 100px;
+        padding: 5px 12px;
+        font-size: 12px;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-family: inherit;
+      }
+      .remove-btn:hover {
+        border-color: var(--error);
+        color: var(--error);
+      }
+      .add-entry-btn {
+        width: 100%;
+        background: transparent;
+        border: 1px dashed var(--border-hover);
+        color: var(--text-muted);
+        padding: 14px;
+        border-radius: 12px;
+        cursor: pointer;
+        font-size: 14px;
+        font-family: inherit;
+        transition: all 0.3s;
+        margin-bottom: 12px;
+        font-weight: 500;
+      }
+      .add-entry-btn:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+        background: rgba(255, 107, 129, 0.05);
+      }
+
+      .btn-row {
+        display: flex;
+        gap: 12px;
+        margin-top: 26px;
+        flex-wrap: wrap;
+      }
+      .btn {
+        flex: 1;
+        padding: 14px 22px;
+        border: none;
+        border-radius: 100px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+        font-family: inherit;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-width: 140px;
+      }
+      .btn-primary {
+        position: relative;
+        background: linear-gradient(135deg, var(--accent), var(--accent-2));
+        color: #fff;
+        box-shadow: 0 6px 18px rgba(255, 107, 129, 0.22);
+        overflow: hidden;
+        isolation: isolate;
+      }
+      .btn-primary::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          120deg,
+          transparent 30%,
+          rgba(255, 255, 255, 0.35) 50%,
+          transparent 70%
+        );
+        transform: translateX(-100%);
+        transition: transform 0.7s cubic-bezier(0.2, 0.8, 0.2, 1);
+        z-index: -1;
+      }
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 28px rgba(255, 107, 129, 0.4);
+      }
+      .btn-primary:hover::before {
+        transform: translateX(100%);
+      }
+      .btn-secondary {
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--text);
+        border: 1px solid var(--border);
+      }
+      .btn-secondary:hover {
+        border-color: var(--border-hover);
+        background: rgba(255, 255, 255, 0.08);
+      }
+      .btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none !important;
+      }
+
+      .final-screen {
+        text-align: center;
+        padding: 10px 0;
+      }
+      .victory-icon {
+        font-size: 70px;
+        margin-bottom: 4px;
+      }
+      .victory-title {
+        font-size: clamp(28px, 4.5vw, 40px);
+        font-weight: 800;
+        background: linear-gradient(120deg, var(--accent), var(--accent-2));
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin: 14px 0 8px;
+        letter-spacing: -0.02em;
+      }
+      .victory-sub {
+        color: var(--text-muted);
+        margin-bottom: 4px;
+        font-size: 15px;
+      }
+      .victory-hint {
+        color: var(--text-muted);
+        font-size: 13px;
+        margin-bottom: 14px;
+        opacity: 0.75;
+      }
+
+      .error-msg {
+        color: var(--error);
+        font-size: 13px;
+        margin-top: 10px;
+        text-align: center;
+        min-height: 18px;
+        font-weight: 500;
+      }
+
+      /* === GROUP STEPS (кілька питань на одній сторінці) === */
+      .field-block {
+        margin-bottom: 22px;
+      }
+      .field-block:last-child {
+        margin-bottom: 2px;
+      }
+      .field-block .choice-grid {
+        margin-bottom: 0;
+      }
+      .field-error {
+        color: var(--error);
+        font-size: 13px;
+        margin-top: 6px;
+        text-align: left;
+        min-height: 18px;
+        font-weight: 500;
+      }
+      .btn.btn-inactive {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .btn-send-hero {
+        width: 100%;
+        padding: 26px 22px;
+        font-size: 17px;
+      }
+
+      /* === RESUME CARD === */
+      .resume-card {
+        background: #ffffff;
+        color: #222;
+        border-radius: 14px;
+        padding: 50px 55px;
+        margin: 24px auto;
+        max-width: 800px;
+        text-align: left;
+        font-family: "Inter", "Segoe UI", Arial, sans-serif;
+        position: relative;
+        box-shadow: 0 14px 50px rgba(0, 0, 0, 0.5);
+        overflow: hidden;
+        contain: paint;
+      }
+      .resume-watermark {
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        transform: rotate(-30deg);
+        transform-origin: center center;
+        pointer-events: none;
+        user-select: none;
+        z-index: 0;
+        line-height: 1.8;
+      }
+      .resume-watermark .wm-row {
+        display: block;
+        white-space: nowrap;
+        font-size: 32px;
+        font-weight: 900;
+        color: rgba(198, 109, 255, 0.05);
+        letter-spacing: 4px;
+        overflow: hidden;
+      }
+      .resume-watermark .wm-row.alt {
+        color: rgba(255, 107, 129, 0.05);
+        padding-left: 80px;
+      }
+      .resume-content {
+        position: relative;
+        z-index: 1;
+      }
+
+      .resume-top {
+        display: flex;
+        gap: 24px;
+        align-items: flex-start;
+        border-bottom: 3px solid;
+        border-image: linear-gradient(90deg, #ff6b81, #c66dff) 1;
+        padding-bottom: 22px;
+        margin-bottom: 24px;
+      }
+      .resume-photo {
+        flex-shrink: 0;
+        width: 110px;
+        height: 110px;
+        border-radius: 14px;
+        border: 3px solid #c66dff;
+        background-color: #f5f5f5;
+        background-size: cover;
+        background-position: center center;
+        background-repeat: no-repeat;
+      }
+      .resume-header-text {
+        flex: 1;
+        min-width: 0;
+      }
+      .resume-name {
+        font-size: 32px;
+        font-weight: 800;
+        letter-spacing: -0.025em;
+        color: #1a1a1a;
+        margin-bottom: 8px;
+        line-height: 1.1;
+        word-break: break-word;
+      }
+      .resume-position-line {
+        display: inline-block;
+        max-width: 100%;
+        font-size: 14px;
+        color: #fff;
+        background: linear-gradient(120deg, #ff6b81, #c66dff);
+        font-weight: 700;
+        padding: 6px 14px;
+        border-radius: 100px;
+        margin-bottom: 14px;
+        line-height: 1.35;
+        word-break: break-word;
+      }
+      .resume-contacts {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px 18px;
+        font-size: 13px;
+        color: #555;
+        max-width: 100%;
+      }
+      .resume-contacts span {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        max-width: 100%;
+        min-width: 0;
+        overflow-wrap: anywhere;
+        word-break: break-word;
+      }
+
+      .resume-section {
+        margin-bottom: 22px;
+      }
+      .resume-section-title {
+        font-size: 13px;
+        font-weight: 800;
+        color: #c66dff;
+        text-transform: uppercase;
+        letter-spacing: 1.8px;
+        margin-bottom: 12px;
+        padding-bottom: 6px;
+        border-bottom: 1px solid #eee;
+      }
+
+      .resume-exp-item,
+      .resume-edu-item {
+        margin-bottom: 14px;
+      }
+      .resume-exp-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 4px;
+      }
+      .resume-exp-position {
+        font-size: 16px;
+        font-weight: 700;
+        color: #1a1a1a;
+        letter-spacing: -0.01em;
+      }
+      .resume-exp-years {
+        font-size: 12px;
+        color: #888;
+        font-style: italic;
+      }
+      .resume-exp-company {
+        font-size: 13px;
+        color: #555;
+        margin-bottom: 6px;
+        font-weight: 600;
+      }
+      .resume-exp-duties {
+        font-size: 13px;
+        color: #444;
+        line-height: 1.55;
+        white-space: pre-wrap;
+        padding-left: 14px;
+        border-left: 2px solid #c66dff;
+      }
+
+      .resume-equipment-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+        font-size: 13px;
+      }
+      .resume-eq-row {
+        display: flex;
+        gap: 8px;
+        min-width: 0;
+      }
+      .resume-eq-label {
+        color: #888;
+        font-weight: 600;
+        min-width: 130px;
+        flex-shrink: 0;
+      }
+      .resume-eq-value {
+        color: #222;
+        min-width: 0;
+        overflow-wrap: anywhere;
+        word-break: break-word;
+      }
+
+      .resume-text-block {
+        font-size: 13px;
+        color: #333;
+        line-height: 1.6;
+        white-space: pre-wrap;
+      }
+
+      .resume-empty-note {
+        font-size: 13px;
+        color: #999;
+        font-style: italic;
+      }
+
+      .resume-footer {
+        margin-top: 28px;
+        padding-top: 14px;
+        border-top: 1px solid #eee;
+        text-align: center;
+        font-size: 11px;
+        color: #999;
+        font-style: italic;
+      }
+
+      /* Modal */
+      .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(10, 6, 18, 0.85);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        animation: fadeIn 0.3s ease;
+        padding: 20px;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      .modal-box {
+        position: relative;
+        background: linear-gradient(180deg, #1a0f2e 0%, #0d0918 100%);
+        border: 1px solid var(--border-hover);
+        border-radius: 24px;
+        padding: 40px 32px;
+        max-width: 480px;
+        width: 100%;
+        text-align: center;
+        box-shadow: 0 20px 60px rgba(198, 109, 255, 0.3);
+        animation: slideIn 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+        overflow: hidden;
+      }
+      .modal-box::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background:
+          radial-gradient(
+            ellipse 300px 80px at 50% 0%,
+            rgba(255, 107, 129, 0.18),
+            transparent 70%
+          ),
+          radial-gradient(
+            ellipse 300px 80px at 50% 100%,
+            rgba(198, 109, 255, 0.12),
+            transparent 70%
+          );
+        pointer-events: none;
+      }
+      .modal-box > * {
+        position: relative;
+      }
+
+      .modal-icon {
+        font-size: 60px;
+        margin-bottom: 12px;
+      }
+      .modal-title {
+        font-size: 24px;
+        font-weight: 800;
+        background: linear-gradient(120deg, var(--accent), var(--accent-2));
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 14px;
+        letter-spacing: -0.02em;
+      }
+      .modal-text {
+        color: var(--text-muted);
+        font-size: 15px;
+        line-height: 1.6;
+        margin-bottom: 24px;
+      }
+      .modal-text b {
+        color: var(--text);
+        font-weight: 600;
+      }
+
+      /* Photo step */
+      .photo-preview {
+        width: 200px;
+        height: 200px;
+        border-radius: 18px;
+        margin: 0 auto 16px;
+        background: rgba(0, 0, 0, 0.35);
+        border: 1px solid var(--border);
+        overflow: hidden;
+        position: relative;
+      }
+      .photo-preview img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .photo-empty {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        font-size: 60px;
+        opacity: 0.4;
+      }
+      #cameraVideo {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+
+      /* === ПІД ЧАС PDF-РЕНДЕРУ — примусовий desktop-вигляд резюме =====
+     html2canvas копіює стилі з DOM, тому навіть на мобільному ми
+     прибираємо мобільні правила для .resume-card під час генерації.
+     Клас pdf-rendering додається у JS і прибирається після рендеру. */
+      .resume-card.pdf-rendering {
+        padding: 50px 55px !important;
+        width: 800px !important;
+        max-width: 800px !important;
+        min-height: 1131px !important;
+        margin: 0 !important;
+      }
+      .resume-card.pdf-rendering .resume-name {
+        font-size: 32px !important;
+      }
+      .resume-card.pdf-rendering .resume-position-line {
+        font-size: 14px !important;
+        padding: 6px 14px !important;
+      }
+      .resume-card.pdf-rendering .resume-photo {
+        width: 110px !important;
+        height: 110px !important;
+      }
+      .resume-card.pdf-rendering .resume-equipment-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+      }
+      .resume-card.pdf-rendering .resume-eq-label {
+        min-width: 130px !important;
+      }
+      .resume-card.pdf-rendering .resume-watermark .wm-row {
+        font-size: 32px !important;
+      }
+      .resume-card.pdf-rendering .resume-top {
+        flex-direction: row !important;
+        align-items: flex-start !important;
+        text-align: left !important;
+        gap: 24px !important;
+      }
+      .resume-card.pdf-rendering .resume-contacts {
+        justify-content: flex-start !important;
+        font-size: 13px !important;
+        gap: 10px 18px !important;
+      }
+
+      @media (max-width: 700px) {
+        .container {
+          padding: 18px 14px 60px;
+        }
+        .progress-container {
+          padding: 14px 16px;
+          border-radius: 14px;
+        }
+        .progress-label {
+          font-size: 13px;
+        }
+        .progress-percent {
+          font-size: 12px;
+        }
+
+        .quest-card {
+          padding: 26px 18px;
+          border-radius: 18px;
+        }
+        .quest-icon {
+          font-size: 40px;
+        }
+        .quest-question {
+          font-size: 17px;
+          line-height: 1.3;
+        }
+        .quest-hint {
+          font-size: 13px;
+          margin-bottom: 22px;
+        }
+
+        .input-field,
+        .textarea-field,
+        .dob-date {
+          padding: 12px 14px;
+          font-size: 16px; /* 16px щоб iOS не зумив */
+        }
+
+        .choice-grid {
+          grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+          gap: 10px;
+        }
+        .choice-btn {
+          padding: 14px 12px;
+          font-size: 13px;
+        }
+        .choice-icon {
+          font-size: 22px;
+          margin-bottom: 6px;
+        }
+
+        .entry-block {
+          padding: 16px;
+          border-radius: 12px;
+        }
+
+        .btn-row {
+          flex-direction: column;
+          gap: 10px;
+          margin-top: 22px;
+        }
+        .btn {
+          width: 100%;
+          padding: 13px 18px;
+          font-size: 14px;
+          min-width: 0;
+        }
+
+        .photo-preview {
+          width: 160px;
+          height: 160px;
+        }
+
+        .resume-card {
+          padding: 22px 18px;
+        }
+        .resume-name {
+          font-size: 22px;
+        }
+        .resume-position-line {
+          font-size: 13px;
+          padding: 5px 12px;
+        }
+        .resume-photo {
+          width: 90px;
+          height: 90px;
+        }
+        .resume-equipment-grid {
+          grid-template-columns: 1fr;
+        }
+        .resume-eq-label {
+          min-width: 100px;
+        }
+        .resume-watermark .wm-row {
+          font-size: 22px;
+        }
+        .resume-top {
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
+          gap: 16px;
+        }
+        .resume-contacts {
+          justify-content: center;
+          font-size: 12px;
+          gap: 8px 14px;
+        }
+
+        .modal-box {
+          padding: 30px 22px;
+          border-radius: 18px;
+        }
+        .modal-title {
+          font-size: 20px;
+        }
+        .modal-text {
+          font-size: 14px;
+        }
+        .modal-icon {
+          font-size: 50px;
+        }
+      }
+
+      @media (max-width: 380px) {
+        .quest-question {
+          font-size: 16px;
+        }
+        .choice-grid {
+          grid-template-columns: 1fr;
+        }
+        .resume-card {
+          padding: 18px 14px;
+        }
+        .resume-name {
+          font-size: 20px;
+        }
+        .resume-contacts {
+          font-size: 11px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Honeypot: невидиме поле, яке заповнюють тільки боти, що сліпо тягнуть форму. -->
+    <div aria-hidden="true" style="
+        position: absolute;
+        left: -9999px;
+        top: -9999px;
+        height: 0;
+        width: 0;
+        overflow: hidden;
+      ">
+      <label>Website (не заповнюйте)
+        <input type="text" id="hp_website" name="website" tabindex="-1" autocomplete="off"></label>
+    </div>
+
+    <div class="container">
+      <div class="progress-container" id="progressContainer">
+        <div class="progress-info">
+          <span class="progress-label" id="progressLabel">Питання 1 з 9</span>
+          <span class="progress-percent" id="progressPercent">0%</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressFill" style="width: 0%;"></div>
+        </div>
+      </div>
+
+      <div id="questContainer">
+    <div class="quest-card">
+      <div class="quest-icon">📋</div>
+      <div class="quest-question">Контактні дані</div>
+      <div class="quest-hint">Всі поля обов'язкові</div>
+      <div id="fieldArea">
+    <div class="field-block" data-field-block="fullName">
+      <label class="field-label">ПІБ</label>
+      <input type="text" class="input-field" data-gfield="fullName" placeholder="Іваненко Іван Іванович" value="">
+      <div class="field-error" id="err_fullName"></div>
+    </div>
+  
+    <div class="field-block" data-field-block="dob">
+      <label class="field-label">Дата народження</label>
+      
+    <input type="date" class="dob-date" id="dobInput" value="" min="1926-10-01" max="2012-10-01" onchange="updateAgeDisplay()">
+    <div class="age-display empty" id="ageDisplay">Обери дату в календарі — ми порахуємо твій вік</div>
+  
+      <div class="field-error" id="err_dob"></div>
+    </div>
+  
+    <div class="field-block" data-field-block="phone">
+      <label class="field-label">Номер телефону</label>
+      <input type="tel" class="input-field" data-gfield="phone" placeholder="+380XXXXXXXXX" value="">
+      <div class="field-error" id="err_phone"></div>
+    </div>
+  
+    <div class="field-block" data-field-block="telegram">
+      <label class="field-label">Нік у Telegram</label>
+      <input type="text" class="input-field" data-gfield="telegram" placeholder="@username або https://t.me/..." value="">
+      <div class="field-error" id="err_telegram"></div>
+    </div>
+  
+    <div class="field-block" data-field-block="email">
+      <label class="field-label">Електронна пошта</label>
+      <input type="email" class="input-field" data-gfield="email" placeholder="name@example.com" value="">
+      <div class="field-error" id="err_email"></div>
+    </div>
+  
+    <div class="field-block" data-field-block="city">
+      <label class="field-label">Звідки ти</label>
+      <input type="text" class="input-field" data-gfield="city" placeholder="Київ" value="">
+      <div class="field-error" id="err_city"></div>
+    </div>
+  </div>
+      <div class="error-msg" id="errorMsg" style="min-height:0"></div>
+      <div class="btn-row">
+        
+        <button class="btn btn-primary btn-inactive" id="nextBtn" onclick="nextStep()">Далі →</button>
+      </div>
+    </div>
+  </div>
+    </div>
+
+    <script>
+      // ============================================================
+      // CONFIG
+      // ============================================================
+      // Apps Script web-app URL — публічний endpoint без секретів.
+      // ID таблиці та логіка запису ховаються на серверній стороні Apps Script.
+      const SCRIPT_URL =
+        "https://script.google.com/macros/s/AKfycby3tb0RmH1nzeYz0a59A48Xac0f0t29vUCU29_c1Gsv9vw9NCZy7xyRZK6P0Ux_YI9DOg/exec";
+
+      const FORM_TOKEN = "festival_2026_v2_xK9mP";
+
+
+      const VACANCY_VIP =
+        "Спеціаліст консьєрж-сервісу по роботі з VIP-клієнтами";
+      const HAS_RESUME_YES = "Так, вже маю";
+      const HAS_RESUME_NO = "Ні, хочу створити";
+
+      // Пошта — тільки латиниця (кирилиця чи інший алфавіт у логіні/домені не проходить).
+      const EMAIL_LATIN_RE =
+        /^[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}$/;
+
+      // Список вакансій підвантажується з Google Sheets (аркуш «Вакансії») через
+      // SCRIPT_URL?action=vacancies. Квест більше не рендериться одразу з цим
+      // fallback-списком — init() спершу чекає на результат fetch-запиту (див.
+      // loadVacanciesAwaited) і лише тоді вирішує, чи показувати квест, чи екран
+      // «Наразі немає активних вакансій». Цей масив лишається як fallback на
+      // випадок, якщо fetch впаде/зависне (fail-open — квест все одно відкриється).
+      let vacanciesList = [];
+      const VACANCIES_FETCH_TIMEOUT_MS = 15000;
+      const VACANCIES_FETCH_ATTEMPTS = 2;
+
+      const VACANCY_ICONS = {
+        [VACANCY_VIP]: "👑",
+        "Фахівець служби турботи про клієнтів": "💬",
+        "Фахівець з аналізу фінансових операцій": "💰",
+        "Фахівець з вихідного обдзвону": "📞",
+        "Фахівець з обслуговування фізичних та корпоративних клієнтів": "🏦",
+        "Фахівець з обслуговування фізичних та корпоративних клієнтів (нічні)": "🌙",
+        "Фахівець з консультування та відеоверифікації": "🎥",
+        "Фахівець з претензійної роботи": "📋",
+      };
+
+      function vacancyIcon(name) {
+        return VACANCY_ICONS[name] || "💼";
+      }
+
+      // Повертає { fetchSucceeded, list }. fetchSucceeded=true означає, що
+      // відповідь від сервера реально отримана (навіть якщо список порожній) —
+      // це дозволяє init() відрізнити «активних вакансій дійсно нуль» від
+      // «мережа підвела, покажемо fallback і не блокуватимемо кандидата».
+      async function loadVacanciesAwaited() {
+        for (let i = 0; i < VACANCIES_FETCH_ATTEMPTS; i++) {
+          const ctrl = new AbortController();
+          const timer = setTimeout(
+            () => ctrl.abort(),
+            VACANCIES_FETCH_TIMEOUT_MS,
+          );
+          try {
+            const resp = await fetch(SCRIPT_URL + "?action=vacancies", {
+              signal: ctrl.signal,
+            });
+            const json = await resp.json();
+            if (json && json.status === "ok" && Array.isArray(json.vacancies)) {
+              const list = json.vacancies
+                .map((v) => ({
+                  value: String(v.value || "").trim(),
+                  icon: String(v.icon || "").trim(),
+                }))
+                .filter((v) => v.value);
+              return { fetchSucceeded: true, list };
+            }
+          } catch (e) {
+          } finally {
+            clearTimeout(timer);
+          }
+        }
+        return { fetchSucceeded: false, list: [] };
+      }
+
+      // ============================================================
+      // DATA MODEL
+      // ============================================================
+      const data = {
+        candidateId: "",
+        hasResume: "",
+        resumeLink: "",
+        vacancy: "",
+        fullName: "",
+        dobDay: "",
+        dobMonth: "",
+        dobYear: "",
+        phone: "",
+        telegram: "",
+        email: "",
+        city: "",
+        englishLevel: "",
+        vipTravel: "",
+        vipBookingServices: "",
+        vipPremiumExp: "",
+        experience: [{ company: "", position: "", years: "", duties: "" }],
+        noExperience: false,
+        education: [{ institution: "", specialty: "", years: "" }],
+        noEducation: false,
+        skills: "",
+        pcType: "",
+        os: "",
+        power: "",
+        powerHours: "",
+        internet: "",
+        extra: "",
+        photo: "",
+      };
+
+      let currentStep = 0;
+      const FORM_OPENED_AT = Date.now();
+
+      // Унікальний ідентифікатор кандидата — генерується один раз на завантаження
+      // сторінки, ніде в UI не показується, але завжди надсилається в payload
+      // (і на contact-, і на final-етапі), щоб backend міг знайти/оновити саме
+      // цей рядок у таблиці.
+      function generateCandidateId() {
+        return (
+          "ID-" +
+          Date.now() +
+          "-" +
+          String(Math.floor(Math.random() * 100000)).padStart(5, "0")
+        );
+      }
+
+      // Чи кандидат уже успішно відправив фінальну анкету («Відправити відгук»).
+      // Вимикає нативний beforeunload-діалог і кастомну exit-модалку (п.4).
+      let applicationSubmitted = false;
+      // Чи вже надіслано contact-етап (одразу після сторінки 1) — щоб не задублювати
+      // запис, якщо кандидат повернеться на крок 0 і знову пройде його вперед.
+      let contactStageSent = false;
+
+      // ============================================================
+      // STEPS — будуються динамічно
+      // ============================================================
+      function buildContactStep() {
+        return {
+          id: "contact",
+          icon: "📋",
+          title: "Контактні дані",
+          hint: "Всі поля обов'язкові",
+          type: "group",
+          gate: true,
+          fields: [
+            {
+              id: "fullName",
+              kind: "text",
+              label: "ПІБ",
+              placeholder: "Іваненко Іван Іванович",
+            },
+            { id: "dob", kind: "dob", label: "Дата народження" },
+            {
+              id: "phone",
+              kind: "tel",
+              label: "Номер телефону",
+              placeholder: "+380XXXXXXXXX",
+            },
+            {
+              id: "telegram",
+              kind: "text",
+              label: "Нік у Telegram",
+              placeholder: "@username або https://t.me/...",
+            },
+            {
+              id: "email",
+              kind: "email",
+              label: "Електронна пошта",
+              placeholder: "name@example.com",
+            },
+            {
+              id: "city",
+              kind: "text",
+              label: "Звідки ти",
+              placeholder: "Київ",
+            },
+          ],
+        };
+      }
+
+      function buildDeviceStep() {
+        return {
+          id: "device",
+          icon: "💻",
+          title: "Вимоги до віддаленої роботи",
+          hint: "В кожному питанні обери відповідь",
+          type: "group",
+          gate: true,
+          fields: [
+            {
+              id: "pcType",
+              kind: "choice",
+              label: "Який у тебе ПК?",
+              single: true,
+              options: [
+                {
+                  value: "Стаціонарний ПК",
+                  label: "Стаціонарний ПК",
+                  icon: "🖥️",
+                },
+                { value: "Ноутбук", label: "Ноутбук", icon: "💻" },
+              ],
+            },
+            {
+              id: "os",
+              kind: "choice",
+              label: "Операційна система",
+              single: true,
+              options: [
+                { value: "macOS", label: "macOS", icon: "🍏" },
+                { value: "Windows", label: "Windows", icon: "🪟" },
+                { value: "Linux", label: "Linux", icon: "🐧" },
+              ],
+            },
+          ],
+        };
+      }
+
+      function buildPowerStep() {
+        const powerFields = [
+          {
+            id: "power",
+            kind: "choice",
+            label: "Додаткові джерела живлення",
+            single: false,
+            exclusive: "Немає",
+            options: [
+              { value: "Немає", label: "Немає", icon: "🚫" },
+              { value: "Станція", label: "Станція", icon: "⚡" },
+              { value: "Павербанк", label: "Павербанк", icon: "🔋" },
+              { value: "Акумулятор", label: "Акумулятор", icon: "🔌" },
+              { value: "Генератор", label: "Генератор", icon: "⛽" },
+            ],
+          },
+        ];
+
+        // Питання про час живлення прив'язане одразу під «Додаткові джерела живлення» —
+        // з'являється тільки якщо обрано щось крім «Немає».
+        const hasPower =
+          data.power &&
+          data.power.split(", ").filter((v) => v && v !== "Немає").length > 0;
+        if (hasPower) {
+          powerFields.push({
+            id: "powerHours",
+            kind: "choice",
+            label: "На який час вистачає живлення?",
+            single: true,
+            options: [
+              { value: "До 1 години", label: "До 1 години", icon: "⏱️" },
+              { value: "1–3 години", label: "1–3 години", icon: "🕐" },
+              { value: "3–6 годин", label: "3–6 годин", icon: "🕒" },
+              { value: "6–12 годин", label: "6–12 годин", icon: "🕕" },
+              {
+                value: "Більше 12 годин",
+                label: "Більше 12 годин",
+                icon: "♾️",
+              },
+            ],
+          });
+        } else if (data.powerHours) {
+          data.powerHours = "";
+        }
+
+        powerFields.push({
+          id: "internet",
+          kind: "choice",
+          label: "Тип інтернету",
+          single: true,
+          options: [
+            { value: "Оптоволокно", label: "Оптоволокно", icon: "🔆" },
+            {
+              value: "Інтернет, що не працює при відключеннях",
+              label: "Інтернет без резерву",
+              icon: "⚠️",
+            },
+            {
+              value: "Мобільний інтернет",
+              label: "Мобільний інтернет",
+              icon: "📶",
+            },
+          ],
+        });
+
+        return {
+          id: "remote",
+          icon: "🔋",
+          title: "Вимоги до віддаленої роботи",
+          hint: "В кожному питанні обери відповідь",
+          type: "group",
+          gate: true,
+          fields: powerFields,
+        };
+      }
+
+      function buildSkillsHobbiesStep() {
+        return {
+          id: "skillsHobbies",
+          icon: "⚡",
+          title: "Твої навички",
+          hint: "Професійні навички та хобі",
+          type: "group",
+          gate: false,
+          fields: [
+            {
+              id: "skills",
+              kind: "textarea",
+              label: "Твої навички",
+              placeholder: "Не обов'язкове для заповнення",
+              optional: true,
+            },
+            {
+              id: "extra",
+              kind: "textarea",
+              label: "Твої хоббі",
+              placeholder: "Не обов'язкове для заповнення",
+              optional: true,
+            },
+          ],
+        };
+      }
+
+      function buildSteps() {
+        const steps = [
+          buildContactStep(),
+          {
+            id: "hasResume",
+            icon: "📄",
+            title: "Чи маєш вже резюме?",
+            hint: "Обери варіант, який тобі підходить",
+            type: "choice",
+            single: true,
+            options: [
+              { value: HAS_RESUME_NO, label: "Ні, хочу створити", icon: "📝" },
+              { value: HAS_RESUME_YES, label: "Так, вже маю", icon: "✅" },
+            ],
+          },
+          {
+            id: "vacancy",
+            icon: "🎯",
+            title: "На яку вакансію подаєшся?",
+            hint: "Обери одну з відкритих позицій",
+            type: "choice",
+            single: true,
+            options: vacanciesList.map((v) => ({
+              value: v.value,
+              label: v.value,
+              icon: v.icon || vacancyIcon(v.value),
+            })),
+          },
+        ];
+
+        if (data.hasResume === HAS_RESUME_YES) {
+          steps.push({
+            id: "resumeLink",
+            icon: "🔗",
+            title:
+              "Надай посилання на своє резюме з гугл-диску (не забудь надати доступ до файлу)",
+            hint: "Встав посилання нижче",
+            type: "text",
+          });
+          steps.push(buildDeviceStep(), buildPowerStep());
+          return steps;
+        }
+
+        if (data.vacancy === VACANCY_VIP) {
+          steps.push({
+            id: "englishLevel",
+            icon: "🇬🇧",
+            title: "Який твій рівень англійської?",
+            hint: "Для VIP-клієнтів англійська обов'язкова",
+            type: "choice",
+            single: true,
+            options: [
+              { value: "A1 — Beginner", label: "A1 — Beginner", icon: "🌱" },
+              {
+                value: "A2 — Elementary",
+                label: "A2 — Elementary",
+                icon: "📘",
+              },
+              {
+                value: "B1 — Intermediate",
+                label: "B1 — Intermediate",
+                icon: "📗",
+              },
+              {
+                value: "B2 — Upper-Intermediate",
+                label: "B2 — Upper-Intermediate",
+                icon: "📕",
+              },
+              { value: "C1 — Advanced", label: "C1 — Advanced", icon: "🏆" },
+              {
+                value: "C2 — Proficient",
+                label: "C2 — Proficient",
+                icon: "👑",
+              },
+            ],
+          });
+          steps.push({
+            id: "vipTravel",
+            icon: "✈️",
+            title: "Подорожі за кордон",
+            hint: "Скільки разів бував за кордоном та які країни відвідував?",
+            type: "textarea",
+            placeholder:
+              "Наприклад: 5 разів — Польща, Туреччина, Єгипет, Австрія, ОАЕ",
+          });
+          steps.push({
+            id: "vipBookingServices",
+            icon: "🏨",
+            title: "Сервіси бронювання",
+            hint: "Які сервіси використовував для бронювання готелів, авто та авіа?",
+            type: "textarea",
+            placeholder:
+              "Наприклад: Booking.com, Airbnb, Kayak, Rentalcars, SkyScanner...",
+          });
+          steps.push({
+            id: "vipPremiumExp",
+            icon: "👑",
+            title: "Досвід у преміальному сервісі",
+            hint: "Перевагою буде: досвід в обслуговуванні преміальних/VIP клієнтів або бронювання (авіа, готелів, авто...)",
+            type: "textarea",
+            placeholder: "Опиши, яким досвідом із зазначеного ти володієш...",
+            optional: true,
+          });
+        }
+
+        steps.push(
+          {
+            id: "education",
+            icon: "🎓",
+            title: "Де навчався?",
+            hint: "Освіта — можна додати декілька закладів або пропустити",
+            type: "education",
+          },
+          {
+            id: "experience",
+            icon: "💼",
+            title: "Розкажи про свій досвід",
+            hint: "Досвід роботи — можна додати декілька місць або пропустити",
+            type: "experience",
+          },
+          buildDeviceStep(),
+          buildPowerStep(),
+          buildSkillsHobbiesStep(),
+          {
+            id: "photo",
+            icon: "📸",
+            title: "Бажаєш додати своє фото?",
+            hint: "За бажанням — фото з'явиться у резюме",
+            type: "photo",
+          },
+        );
+
+        return steps;
+      }
+
+      let stepConfig = buildSteps();
+
+      // ============================================================
+      // PROGRESS
+      // ============================================================
+      function updateProgress() {
+        const total = stepConfig.length;
+        // Поточний крок (1-based) для лічильника. На фінальному екрані показуємо total/total.
+        const shown = Math.min(currentStep + 1, total);
+        const percent = Math.round((currentStep / total) * 100);
+        document.getElementById("progressFill").style.width = percent + "%";
+        document.getElementById("progressLabel").textContent =
+          `Питання ${shown} з ${total}`;
+        document.getElementById("progressPercent").textContent = percent + "%";
+      }
+
+      function escapeHtml(s) {
+        return (s || "").replace(
+          /[&<>"']/g,
+          (c) =>
+            ({
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              '"': "&quot;",
+              "'": "&#39;",
+            })[c],
+        );
+      }
+
+      // ============================================================
+      // GROUP STEPS (кілька питань на одній сторінці)
+      // ============================================================
+      function renderGroupField(f) {
+        let inner;
+        if (f.kind === "choice") inner = renderChoiceFields(f);
+        else if (f.kind === "dob") inner = renderDobFields();
+        else if (f.kind === "textarea") {
+          inner = `<textarea class="textarea-field" data-gfield="${f.id}" placeholder="${f.placeholder || ""}">${escapeHtml(data[f.id])}</textarea>`;
+        } else {
+          inner = `<input type="${f.kind}" class="input-field" data-gfield="${f.id}" placeholder="${f.placeholder || ""}" value="${escapeHtml(data[f.id])}">`;
+        }
+        return `
+    <div class="field-block" data-field-block="${f.id}">
+      <label class="field-label">${escapeHtml(f.label)}</label>
+      ${inner}
+      <div class="field-error" id="err_${f.id}"></div>
+    </div>
+  `;
+      }
+
+      function renderGroupFields(cfg) {
+        return cfg.fields.map(renderGroupField).join("");
+      }
+
+      // Чистить помилку одного поля групи (за id) і загальний #errorMsg —
+      // той самий слот, який чистять toggleChoice/updateAgeDisplay на звичайних кроках.
+      function clearError(id) {
+        const slot = id && document.getElementById("err_" + id);
+        if (slot) slot.textContent = "";
+        const generic = document.getElementById("errorMsg");
+        if (generic) generic.textContent = "";
+      }
+
+      // Перераховує видимий стан кнопки «Далі» на group-кроках. Кнопка НЕ отримує
+      // атрибут disabled — вона має лишатись клікабельною, щоб клік по «неактивній»
+      // кнопці показував інлайнові помилки під незаповненими полями (nextStep -> validateStep).
+      function refreshGate() {
+        const cfg = stepConfig[currentStep];
+        const btn = document.getElementById("nextBtn");
+        if (!btn || !cfg || cfg.type !== "group" || !cfg.gate) return;
+        btn.classList.toggle("btn-inactive", groupMissing(cfg).length > 0);
+      }
+
+      // ============================================================
+      // RENDER
+      // ============================================================
+      // Плейсхолдери для окремих текстових кроків, які лишились поза групами.
+      // Fallback — щоб новий текстовий крок (напр. resumeLink) ніколи не впав на undefined.
+      const TEXT_FIELD_CONF = {
+        resumeLink: {
+          type: "text",
+          placeholder: "https://drive.google.com/...",
+        },
+      };
+      function textFieldConf(id) {
+        return TEXT_FIELD_CONF[id] || { type: "text", placeholder: "" };
+      }
+
+      function renderQuestion() {
+        stepConfig = buildSteps();
+        if (currentStep >= stepConfig.length) {
+          renderFinal();
+          return;
+        }
+        const cfg = stepConfig[currentStep];
+        const container = document.getElementById("questContainer");
+        let body = "";
+
+        if (cfg.type === "group") body = renderGroupFields(cfg);
+        else if (cfg.type === "experience") body = renderExperienceFields();
+        else if (cfg.type === "education") body = renderEducationFields();
+        else if (cfg.type === "choice") body = renderChoiceFields(cfg);
+        else if (cfg.type === "dob") body = renderDobFields();
+        else if (cfg.type === "photo") body = renderPhotoFields();
+        else if (cfg.type === "textarea") {
+          body = `<textarea class="textarea-field" id="answerField" placeholder="${cfg.placeholder || ""}">${escapeHtml(data[cfg.id])}</textarea>`;
+        } else {
+          const conf = textFieldConf(cfg.id);
+          body = `<input type="${conf.type}" class="input-field" id="answerField" placeholder="${conf.placeholder}" value="${escapeHtml(data[cfg.id])}">`;
+        }
+
+        const isLast = currentStep === stepConfig.length - 1;
+        container.innerHTML = `
+    <div class="quest-card">
+      <div class="quest-icon">${cfg.icon}</div>
+      <div class="quest-question">${cfg.title}</div>
+      <div class="quest-hint">${cfg.hint}</div>
+      <div id="fieldArea">${body}</div>
+      <div class="error-msg" id="errorMsg" style="${cfg.type === "group" ? "min-height:0" : ""}"></div>
+      <div class="btn-row">
+        ${currentStep > 0 ? '<button class="btn btn-secondary" onclick="prevStep()">← Назад</button>' : ""}
+        <button class="btn btn-primary" id="nextBtn" onclick="nextStep()">${isLast ? "🏆 Завершити" : "Далі →"}</button>
+      </div>
+    </div>
+  `;
+
+        if (cfg.type === "group") {
+          document
+            .getElementById("fieldArea")
+            .addEventListener("input", (e) => {
+              const block = e.target.closest("[data-field-block]");
+              if (!block) return;
+              collectGroup(cfg);
+              clearError(block.getAttribute("data-field-block"));
+              refreshGate();
+            });
+          const firstField = document.querySelector(
+            "[data-gfield], .dob-date, .choice-btn",
+          );
+          if (firstField && firstField.tagName === "INPUT") firstField.focus();
+          document.querySelectorAll("input[data-gfield]").forEach((el) => {
+            el.addEventListener("keydown", (e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                nextStep();
+              }
+            });
+          });
+        } else {
+          const focusEl = document.getElementById("answerField");
+          if (focusEl) focusEl.focus();
+          if (focusEl && focusEl.tagName === "INPUT") {
+            focusEl.addEventListener("keydown", (e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                nextStep();
+              }
+            });
+          }
+        }
+        if (cfg.type === "dob") updateAgeDisplay();
+        refreshGate();
+        updateProgress();
+      }
+
+      function renderChoiceFields(cfg) {
+        const current = data[cfg.id];
+        const selected = cfg.single
+          ? current
+            ? [current]
+            : []
+          : current
+            ? current.split(", ").filter(Boolean)
+            : [];
+        let html = `<div class="choice-block" data-choice-scope="${cfg.id}"><div class="choice-grid">`;
+        cfg.options.forEach((opt) => {
+          const isSel = selected.includes(opt.value);
+          html += `
+      <button type="button" class="choice-btn${isSel ? " selected" : ""}"
+              data-choice="${escapeHtml(opt.value)}"
+              onclick="toggleChoice(this, '${cfg.id}', ${cfg.single}, ${cfg.exclusive ? `'${escapeHtml(cfg.exclusive)}'` : "null"})">
+        <span class="choice-icon">${opt.icon}</span>
+        ${escapeHtml(opt.label)}
+      </button>
+    `;
+        });
+        html += "</div></div>";
+        return html;
+      }
+
+      // Скоуп для вибору варіантів — шукає найближчий контейнер з data-choice-scope,
+      // щоб кілька питань-вибору на одній сторінці (group) не затирали вибір одне одного.
+      // Кнопки кроку фото не мають data-choice-scope і data-choice, тож не потрапляють у вибірку.
+      function choiceScope(btn) {
+        return btn.closest("[data-choice-scope]") || document;
+      }
+
+      function toggleChoice(btn, fieldId, single, exclusive) {
+        const scope = choiceScope(btn);
+        const value = btn.getAttribute("data-choice");
+        if (single) {
+          scope
+            .querySelectorAll(".choice-btn[data-choice]")
+            .forEach((b) => b.classList.remove("selected"));
+          btn.classList.add("selected");
+          data[fieldId] = value;
+        } else {
+          const isExclusive = exclusive && value === exclusive;
+          if (isExclusive) {
+            const willBeSelected = !btn.classList.contains("selected");
+            scope
+              .querySelectorAll(".choice-btn[data-choice]")
+              .forEach((b) => b.classList.remove("selected"));
+            if (willBeSelected) btn.classList.add("selected");
+          } else {
+            btn.classList.toggle("selected");
+            if (exclusive) {
+              scope
+                .querySelectorAll(".choice-btn[data-choice]")
+                .forEach((b) => {
+                  if (b.getAttribute("data-choice") === exclusive)
+                    b.classList.remove("selected");
+                });
+            }
+          }
+          const selected = [];
+          scope
+            .querySelectorAll(".choice-btn.selected[data-choice]")
+            .forEach((b) => {
+              selected.push(b.getAttribute("data-choice"));
+            });
+          data[fieldId] = selected.join(", ");
+        }
+        clearError(fieldId);
+        // «Додаткові джерела живлення» умовно показує/ховає питання про час живлення
+        // на тій самій сторінці — перебудовуємо тільки #fieldArea, без переходу кроку
+        // (той самий підхід, що й toggleNoExperience/toggleNoEducation).
+        if (fieldId === "power") {
+          const cfg = stepConfig[currentStep];
+          if (cfg && cfg.type === "group" && cfg.id === "remote") {
+            const rebuilt = buildPowerStep();
+            stepConfig[currentStep] = rebuilt;
+            document.getElementById("fieldArea").innerHTML =
+              renderGroupFields(rebuilt);
+          }
+        }
+        refreshGate();
+      }
+
+      const MONTHS_UK = [
+        "січня",
+        "лютого",
+        "березня",
+        "квітня",
+        "травня",
+        "червня",
+        "липня",
+        "серпня",
+        "вересня",
+        "жовтня",
+        "листопада",
+        "грудня",
+      ];
+
+      function isoDate(d) {
+        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+      }
+
+      function renderDobFields() {
+        const today = new Date();
+        const minDate = new Date(
+          today.getFullYear() - 100,
+          today.getMonth(),
+          today.getDate(),
+        );
+        const maxDate = new Date(
+          today.getFullYear() - 14,
+          today.getMonth(),
+          today.getDate(),
+        );
+        const value =
+          data.dobDay && data.dobMonth && data.dobYear
+            ? `${data.dobYear}-${String(data.dobMonth).padStart(2, "0")}-${String(data.dobDay).padStart(2, "0")}`
+            : "";
+
+        return `
+    <input type="date" class="dob-date" id="dobInput" value="${value}"
+           min="${isoDate(minDate)}" max="${isoDate(maxDate)}"
+           onchange="updateAgeDisplay()">
+    <div class="age-display empty" id="ageDisplay">Обери дату в календарі — ми порахуємо твій вік</div>
+  `;
+      }
+
+      function calculateAge(day, month, year) {
+        if (!day || !month || !year) return null;
+        const today = new Date();
+        const dob = new Date(year, month - 1, day);
+        if (dob.getDate() != day || dob.getMonth() != month - 1) return null;
+        let age = today.getFullYear() - year;
+        const m = today.getMonth() - (month - 1);
+        if (m < 0 || (m === 0 && today.getDate() < day)) age--;
+        return age;
+      }
+      function ageWord(n) {
+        const mod10 = n % 10,
+          mod100 = n % 100;
+        if (mod10 === 1 && mod100 !== 11) return "рік";
+        if (mod10 >= 2 && mod10 <= 4 && (mod100 < 10 || mod100 >= 20))
+          return "роки";
+        return "років";
+      }
+      function updateAgeDisplay() {
+        const raw = document.getElementById("dobInput").value; // формат "YYYY-MM-DD" від календаря, або ""
+        const [y, m, d] = raw ? raw.split("-") : ["", "", ""];
+        // Прибираємо провідні нулі (з календаря приходить "05"), щоб зберегти
+        // формат dobDay/dobMonth незмінним для решти коду (buildPayload, resume-текст тощо).
+        data.dobDay = d ? String(parseInt(d, 10)) : "";
+        data.dobMonth = m ? String(parseInt(m, 10)) : "";
+        data.dobYear = y || "";
+        const display = document.getElementById("ageDisplay");
+        const age = calculateAge(data.dobDay, data.dobMonth, data.dobYear);
+        if (age !== null && age >= 14 && age <= 100) {
+          display.classList.remove("empty");
+          display.textContent = `🎉 Тобі ${age} ${ageWord(age)}`;
+        } else if (d && m && y) {
+          display.classList.remove("empty");
+          display.textContent = "⚠️ Перевір правильність дати";
+        } else {
+          display.classList.add("empty");
+          display.textContent =
+            "Обери дату в календарі — ми порахуємо твій вік";
+        }
+        clearError("dob");
+        refreshGate();
+      }
+
+      function buildWatermark() {
+        const word = "monobank";
+        const perRow = 18,
+          rows = 60;
+        let html = "";
+        for (let r = 0; r < rows; r++) {
+          const cls = r % 2 === 0 ? "wm-row" : "wm-row alt";
+          html += `<span class="${cls}">${(word + " ").repeat(perRow)}</span>`;
+        }
+        return html;
+      }
+
+      // ============================================================
+      // EXPERIENCE / EDUCATION (з можливістю «Немає»)
+      // ============================================================
+      function renderExperienceFields() {
+        if (data.noExperience) {
+          return `
+      <div style="text-align:center; padding: 24px; color: var(--text-muted); font-size: 14px;">
+        Зазначено: <b style="color: var(--accent);">досвіду роботи немає</b>
+      </div>
+      <button class="skip-btn active" onclick="toggleNoExperience()">↻ Я маю досвід — повернути поля</button>
+    `;
+        }
+        let html = "";
+        data.experience.forEach((entry, idx) => {
+          html += `
+      <div class="entry-block">
+        <div class="entry-header">
+          <span class="entry-title">📍 Місце роботи #${idx + 1}</span>
+          ${data.experience.length > 1 ? `<button class="remove-btn" onclick="removeExp(${idx})">✕ Видалити</button>` : ""}
+        </div>
+        <div class="field-group">
+          <label class="field-label">Назва компанії</label>
+          <input type="text" class="input-field" data-exp="${idx}" data-field="company" placeholder="ТОВ Приклад" value="${escapeHtml(entry.company)}">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Посада</label>
+          <input type="text" class="input-field" data-exp="${idx}" data-field="position" placeholder="Менеджер з продажу" value="${escapeHtml(entry.position)}">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Роки роботи</label>
+          <input type="text" class="input-field" data-exp="${idx}" data-field="years" placeholder="2022 — 2024" value="${escapeHtml(entry.years)}">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Обов'язки (коротко)</label>
+          <textarea class="textarea-field" data-exp="${idx}" data-field="duties" placeholder="• Консультування клієнтів&#10;• Робота з CRM" style="min-height: 90px;">${escapeHtml(entry.duties || "")}</textarea>
+        </div>
+      </div>
+    `;
+        });
+        html += `<button class="add-entry-btn" onclick="addExp()">➕ Додати ще місце роботи</button>`;
+        html += `<button class="skip-btn" onclick="toggleNoExperience()">🚫 Немає досвіду роботи</button>`;
+        return html;
+      }
+      function toggleNoExperience() {
+        if (!data.noExperience) collectExperience();
+        data.noExperience = !data.noExperience;
+        document.getElementById("fieldArea").innerHTML =
+          renderExperienceFields();
+        document.getElementById("errorMsg").textContent = "";
+      }
+
+      function renderEducationFields() {
+        if (data.noEducation) {
+          return `
+      <div style="text-align:center; padding: 24px; color: var(--text-muted); font-size: 14px;">
+        Зазначено: <b style="color: var(--accent);">вищої освіти немає</b>
+      </div>
+      <button class="skip-btn active" onclick="toggleNoEducation()">↻ Маю освіту — повернути поля</button>
+    `;
+        }
+        let html = "";
+        data.education.forEach((entry, idx) => {
+          html += `
+      <div class="entry-block">
+        <div class="entry-header">
+          <span class="entry-title">🎓 Освіта #${idx + 1}</span>
+          ${data.education.length > 1 ? `<button class="remove-btn" onclick="removeEdu(${idx})">✕ Видалити</button>` : ""}
+        </div>
+        <div class="field-group">
+          <label class="field-label">Назва закладу</label>
+          <input type="text" class="input-field" data-edu="${idx}" data-field="institution" placeholder="КНУ ім. Шевченка" value="${escapeHtml(entry.institution)}">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Спеціальність</label>
+          <input type="text" class="input-field" data-edu="${idx}" data-field="specialty" placeholder="Економіка" value="${escapeHtml(entry.specialty)}">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Роки навчання</label>
+          <input type="text" class="input-field" data-edu="${idx}" data-field="years" placeholder="2018 — 2022" value="${escapeHtml(entry.years)}">
+        </div>
+      </div>
+    `;
+        });
+        html += `<button class="add-entry-btn" onclick="addEdu()">➕ Додати ще освіту</button>`;
+        html += `<button class="skip-btn" onclick="toggleNoEducation()">🚫 Немає вищої освіти</button>`;
+        return html;
+      }
+      function toggleNoEducation() {
+        if (!data.noEducation) collectEducation();
+        data.noEducation = !data.noEducation;
+        document.getElementById("fieldArea").innerHTML =
+          renderEducationFields();
+        document.getElementById("errorMsg").textContent = "";
+      }
+
+      function collectExperience() {
+        document.querySelectorAll("[data-exp]").forEach((el) => {
+          const idx = parseInt(el.getAttribute("data-exp"));
+          const f = el.getAttribute("data-field");
+          if (data.experience[idx]) data.experience[idx][f] = el.value;
+        });
+      }
+      function collectEducation() {
+        document.querySelectorAll("[data-edu]").forEach((el) => {
+          const idx = parseInt(el.getAttribute("data-edu"));
+          const f = el.getAttribute("data-field");
+          if (data.education[idx]) data.education[idx][f] = el.value;
+        });
+      }
+      function addExp() {
+        collectExperience();
+        data.experience.push({
+          company: "",
+          position: "",
+          years: "",
+          duties: "",
+        });
+        document.getElementById("fieldArea").innerHTML =
+          renderExperienceFields();
+      }
+      function removeExp(idx) {
+        collectExperience();
+        data.experience.splice(idx, 1);
+        document.getElementById("fieldArea").innerHTML =
+          renderExperienceFields();
+      }
+      function addEdu() {
+        collectEducation();
+        data.education.push({ institution: "", specialty: "", years: "" });
+        document.getElementById("fieldArea").innerHTML =
+          renderEducationFields();
+      }
+      function removeEdu(idx) {
+        collectEducation();
+        data.education.splice(idx, 1);
+        document.getElementById("fieldArea").innerHTML =
+          renderEducationFields();
+      }
+
+      // ============================================================
+      // PHOTO STEP
+      // ============================================================
+      let cameraStream = null;
+
+      function renderPhotoFields() {
+        const previewInner = data.photo
+          ? `<img src="${data.photo}" alt="">`
+          : `<div class="photo-empty">📷</div>`;
+        return `
+    <div class="photo-preview" id="photoPreview">${previewInner}</div>
+    <div class="choice-grid">
+      <button type="button" class="choice-btn" onclick="openCamera()">
+        <span class="choice-icon">📸</span>
+        Зробити фото
+      </button>
+      <button type="button" class="choice-btn" onclick="document.getElementById('photoFile').click()">
+        <span class="choice-icon">🖼️</span>
+        З галереї
+      </button>
+      ${data.photo ? `<button type="button" class="choice-btn" onclick="clearPhoto()"><span class="choice-icon">🗑️</span>Прибрати</button>` : ""}
+    </div>
+    <input type="file" id="photoFile" accept="image/*" style="display:none" onchange="onPhotoFile(event)">
+    <p style="text-align:center; color: var(--text-muted); font-size: 13px; margin-top: 12px;">
+      Фото — за бажанням. Можна пропустити та натиснути «Завершити».
+    </p>
+  `;
+      }
+
+      function clearPhoto() {
+        data.photo = "";
+        stopCamera();
+        document.getElementById("fieldArea").innerHTML = renderPhotoFields();
+      }
+
+      function onPhotoFile(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        if (!file.type.startsWith("image/")) {
+          document.getElementById("errorMsg").textContent = "Це не зображення";
+          return;
+        }
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          resizeImage(ev.target.result, 600, (resized) => {
+            data.photo = resized;
+            document.getElementById("fieldArea").innerHTML =
+              renderPhotoFields();
+          });
+        };
+        reader.readAsDataURL(file);
+      }
+
+      function resizeImage(dataUrl, maxSize, cb) {
+        const img = new Image();
+        img.onload = () => {
+          let w = img.width,
+            h = img.height;
+          if (w > h && w > maxSize) {
+            h = (h * maxSize) / w;
+            w = maxSize;
+          } else if (h > maxSize) {
+            w = (w * maxSize) / h;
+            h = maxSize;
+          }
+          const canvas = document.createElement("canvas");
+          canvas.width = w;
+          canvas.height = h;
+          canvas.getContext("2d").drawImage(img, 0, 0, w, h);
+          cb(canvas.toDataURL("image/jpeg", 0.85));
+        };
+        img.src = dataUrl;
+      }
+
+      async function openCamera() {
+        try {
+          stopCamera();
+          cameraStream = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode: "user" },
+            audio: false,
+          });
+          const preview = document.getElementById("photoPreview");
+          preview.innerHTML = `<video id="cameraVideo" autoplay playsinline></video>`;
+          const video = document.getElementById("cameraVideo");
+          video.srcObject = cameraStream;
+          const grid = preview.parentElement.querySelector(".choice-grid");
+          grid.innerHTML = `
+      <button type="button" class="choice-btn" onclick="snapPhoto()"><span class="choice-icon">⚡</span>Зняти</button>
+      <button type="button" class="choice-btn" onclick="cancelCamera()"><span class="choice-icon">✖️</span>Скасувати</button>
+    `;
+        } catch (e) {
+          document.getElementById("errorMsg").textContent =
+            "Не вдалося отримати доступ до камери";
+        }
+      }
+      function snapPhoto() {
+        const video = document.getElementById("cameraVideo");
+        if (!video) return;
+        const canvas = document.createElement("canvas");
+        const size = Math.min(video.videoWidth, video.videoHeight);
+        canvas.width = 600;
+        canvas.height = 600;
+        const sx = (video.videoWidth - size) / 2;
+        const sy = (video.videoHeight - size) / 2;
+        canvas
+          .getContext("2d")
+          .drawImage(video, sx, sy, size, size, 0, 0, 600, 600);
+        data.photo = canvas.toDataURL("image/jpeg", 0.85);
+        stopCamera();
+        document.getElementById("fieldArea").innerHTML = renderPhotoFields();
+      }
+      function cancelCamera() {
+        stopCamera();
+        document.getElementById("fieldArea").innerHTML = renderPhotoFields();
+      }
+      function stopCamera() {
+        if (cameraStream) {
+          cameraStream.getTracks().forEach((t) => t.stop());
+          cameraStream = null;
+        }
+      }
+
+      // ============================================================
+      // VALIDATION
+      // ============================================================
+      // Сентинел, який validateStep повертає для group-кроків: помилки вже намальовані
+      // під конкретними полями, тож nextStep не повинен ще й писати їх у загальний #errorMsg.
+      const INLINE_ERRORS = "__inline__";
+
+      // Синхронізує значення текстових/textarea-полів групи у data (choice/dob
+      // синхронізуються самостійно через toggleChoice/updateAgeDisplay).
+      function collectGroup(cfg) {
+        cfg.fields.forEach((f) => {
+          if (f.kind === "choice" || f.kind === "dob") return;
+          const el = document.querySelector(`[data-gfield="${f.id}"]`);
+          if (el) data[f.id] = el.value;
+        });
+      }
+
+      function isGroupFieldFilled(f) {
+        if (f.kind === "dob")
+          return !!(data.dobDay && data.dobMonth && data.dobYear);
+        return !!(data[f.id] && String(data[f.id]).trim());
+      }
+
+      // Список обов'язкових незаповнених полів групи — використовується для стану кнопки «Далі».
+      function groupMissing(cfg) {
+        return cfg.fields.filter((f) => !f.optional && !isGroupFieldFilled(f));
+      }
+
+      // Повна валідація одного поля групи (включно з форматом e-mail/телефону) — викликається на «Далі».
+      function validateGroupField(f) {
+        if (f.kind === "choice") {
+          if (!data[f.id] || !String(data[f.id]).trim())
+            return "Обери відповідь";
+          return null;
+        }
+        if (f.kind === "dob") {
+          if (!data.dobDay || !data.dobMonth || !data.dobYear)
+            return "Це поле обов'язкове";
+          const age = calculateAge(data.dobDay, data.dobMonth, data.dobYear);
+          if (age === null) return "Перевір правильність дати";
+          if (age < 14 || age > 100) return "Вік має бути від 14 до 100 років";
+          return null;
+        }
+        const value = String(data[f.id] || "").trim();
+        if (!value) {
+          if (f.optional) {
+            data[f.id] = "";
+            return null;
+          }
+          return "Це поле обов'язкове";
+        }
+        if (f.id === "email" && !EMAIL_LATIN_RE.test(value))
+          return "Невірний формат пошти — тільки латинські букви";
+        if (f.id === "phone" && !/^[+]?[\d\s\-\(\)]{10,}$/.test(value))
+          return "Невірний формат телефону";
+        data[f.id] = value;
+        return null;
+      }
+
+      function validateStep() {
+        const cfg = stepConfig[currentStep];
+        const id = cfg.id;
+        if (cfg.type === "group") {
+          collectGroup(cfg);
+          let hasError = false;
+          cfg.fields.forEach((f) => {
+            const msg = validateGroupField(f);
+            const slot = document.getElementById("err_" + f.id);
+            if (slot) slot.textContent = msg || "";
+            if (msg) hasError = true;
+          });
+          refreshGate();
+          return hasError ? INLINE_ERRORS : null;
+        }
+        if (cfg.type === "experience") {
+          if (data.noExperience) return null;
+          collectExperience();
+          for (const e of data.experience) {
+            if (!e.company.trim() || !e.position.trim() || !e.years.trim())
+              return "Заповни всі поля для кожного місця роботи або обери «Немає досвіду»";
+          }
+          return null;
+        }
+        if (cfg.type === "education") {
+          if (data.noEducation) return null;
+          collectEducation();
+          for (const e of data.education) {
+            if (!e.institution.trim() || !e.specialty.trim() || !e.years.trim())
+              return "Заповни всі поля для кожної освіти або обери «Немає освіти»";
+          }
+          return null;
+        }
+        if (cfg.type === "choice") {
+          if (!data[id] || !data[id].trim()) return "Обери хоча б один варіант";
+          return null;
+        }
+        if (cfg.type === "dob") {
+          if (!data.dobDay || !data.dobMonth || !data.dobYear)
+            return "Обери день, місяць і рік народження";
+          const age = calculateAge(data.dobDay, data.dobMonth, data.dobYear);
+          if (age === null) return "Перевір правильність дати";
+          if (age < 14 || age > 100) return "Вік має бути від 14 до 100 років";
+          return null;
+        }
+        if (cfg.type === "photo") return null;
+        if (cfg.type === "textarea") {
+          const field = document.getElementById("answerField");
+          const value = field.value.trim();
+          if (!value && !cfg.optional) return "Це поле обов'язкове";
+          data[id] = value;
+          return null;
+        }
+        const field = document.getElementById("answerField");
+        const value = field.value.trim();
+        if (!value) {
+          if (cfg.optional) {
+            data[id] = "";
+            return null;
+          }
+          return "Це поле обов'язкове";
+        }
+        if (id === "email" && !EMAIL_LATIN_RE.test(value))
+          return "Невірний формат пошти — тільки латинські букви";
+        if (id === "phone" && !/^[+]?[\d\s\-\(\)]{10,}$/.test(value))
+          return "Невірний формат телефону";
+        data[id] = value;
+        return null;
+      }
+
+      function nextStep() {
+        const err = validateStep();
+        if (err === INLINE_ERRORS) return;
+        if (err) {
+          document.getElementById("errorMsg").textContent = err;
+          return;
+        }
+        // Кандидат щойно успішно пройшов крок 0 (контактні дані) — надсилаємо
+        // їх у таблицю негайно, не чекаючи фінальної відправки (п.3).
+        if (currentStep === 0) {
+          sendContactStage();
+        }
+        stopCamera();
+        currentStep++;
+        pushHistoryStep(); // sentinel-запис для перехоплення кнопки "Назад" (п.4)
+        renderQuestion();
+      }
+      function prevStep() {
+        const cfg = stepConfig[currentStep];
+        if (cfg.type === "group") {
+          collectGroup(cfg);
+        } else if (cfg.type === "experience") {
+          if (!data.noExperience) collectExperience();
+        } else if (cfg.type === "education") {
+          if (!data.noEducation) collectEducation();
+        } else if (cfg.type === "textarea") {
+          const f = document.getElementById("answerField");
+          if (f) data[cfg.id] = f.value;
+        } else if (
+          cfg.type !== "choice" &&
+          cfg.type !== "dob" &&
+          cfg.type !== "photo"
+        ) {
+          const f = document.getElementById("answerField");
+          if (f) data[cfg.id] = f.value;
+        }
+        stopCamera();
+        currentStep--;
+        pushHistoryStep();
+        renderQuestion();
+      }
+
+      // ============================================================
+      // FINAL SCREEN
+      // ============================================================
+      function renderFinal() {
+        updateProgress();
+        const container = document.getElementById("questContainer");
+
+        // Гілка «Так, вже маю» — короткий фінал: лише дві кнопки,
+        // без карточки резюме (його ще не генерували в конструкторі) і без PDF.
+        if (data.hasResume === HAS_RESUME_YES) {
+          container.innerHTML = `
+      <div class="quest-card final-screen">
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <button class="btn btn-primary btn-send-hero" id="sendBtn" onclick="sendApplication()">📨 Відправити відгук</button>
+          <button class="btn btn-secondary" onclick="restart()">🔄 Почати знову</button>
+        </div>
+      </div>
+    `;
+          return;
+        }
+
+        const age = calculateAge(data.dobDay, data.dobMonth, data.dobYear);
+        const dobStr =
+          data.dobDay && data.dobMonth && data.dobYear
+            ? `${data.dobDay} ${MONTHS_UK[parseInt(data.dobMonth) - 1]} ${data.dobYear} р.`
+            : "";
+        const ageStr = age !== null ? `${age} ${ageWord(age)}` : "";
+
+        const expHtml = data.noExperience
+          ? `<div class="resume-empty-note">Без досвіду роботи</div>`
+          : data.experience
+              .map(
+                (e) => `
+      <div class="resume-exp-item">
+        <div class="resume-exp-head">
+          <div class="resume-exp-position">${escapeHtml(e.position)}</div>
+          <div class="resume-exp-years">${escapeHtml(e.years)}</div>
+        </div>
+        <div class="resume-exp-company">${escapeHtml(e.company)}</div>
+        ${e.duties && e.duties.trim() ? `<div class="resume-exp-duties">${escapeHtml(e.duties)}</div>` : ""}
+      </div>
+    `,
+              )
+              .join("");
+
+        const eduHtml = data.noEducation
+          ? `<div class="resume-empty-note">Без вищої освіти</div>`
+          : data.education
+              .map(
+                (e) => `
+      <div class="resume-edu-item">
+        <div class="resume-exp-head">
+          <div class="resume-exp-position">${escapeHtml(e.institution)}</div>
+          <div class="resume-exp-years">${escapeHtml(e.years)}</div>
+        </div>
+        <div class="resume-exp-company">${escapeHtml(e.specialty)}</div>
+      </div>
+    `,
+              )
+              .join("");
+
+        const photoHtml = data.photo
+          ? `<div class="resume-photo" role="img" aria-label="Фото кандидата" style="background-image:url('${data.photo}')"></div>`
+          : "";
+
+        const englishRowHtml = data.englishLevel
+          ? `<div class="resume-section">
+         <div class="resume-section-title">Рівень англійської</div>
+         <div class="resume-text-block">${escapeHtml(data.englishLevel)}</div>
+       </div>`
+          : "";
+
+        const vipExtrasHtml =
+          data.vipTravel || data.vipBookingServices || data.vipPremiumExp
+            ? `<div class="resume-section">
+         <div class="resume-section-title">Консьєрж-сервіс</div>
+         ${data.vipTravel ? `<div style="margin-bottom:10px"><span style="font-weight:700;color:#888;font-size:12px;text-transform:uppercase;letter-spacing:1px;">Подорожі за кордон</span><div class="resume-text-block" style="margin-top:4px">${escapeHtml(data.vipTravel)}</div></div>` : ""}
+         ${data.vipBookingServices ? `<div style="margin-bottom:10px"><span style="font-weight:700;color:#888;font-size:12px;text-transform:uppercase;letter-spacing:1px;">Сервіси бронювання</span><div class="resume-text-block" style="margin-top:4px">${escapeHtml(data.vipBookingServices)}</div></div>` : ""}
+         ${data.vipPremiumExp ? `<div><span style="font-weight:700;color:#888;font-size:12px;text-transform:uppercase;letter-spacing:1px;">Досвід у преміальному сервісі</span><div class="resume-text-block" style="margin-top:4px">${escapeHtml(data.vipPremiumExp)}</div></div>` : ""}
+       </div>`
+            : "";
+
+        const powerStr =
+          data.power + (data.powerHours ? ` (${data.powerHours})` : "");
+
+        const contactsHtml = [
+          `<span>📱 ${escapeHtml(data.phone)}</span>`,
+          data.telegram ? `<span>✈️ ${escapeHtml(data.telegram)}</span>` : "",
+          `<span>📧 ${escapeHtml(data.email)}</span>`,
+          `<span>📍 ${escapeHtml(data.city)}</span>`,
+          `<span>🎂 ${escapeHtml(dobStr)}${ageStr ? " (" + escapeHtml(ageStr) + ")" : ""}</span>`,
+        ]
+          .filter(Boolean)
+          .join("");
+
+        container.innerHTML = `
+    <div class="quest-card final-screen">
+      <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:28px;">
+        <button class="btn btn-primary btn-send-hero" id="sendBtn" onclick="sendApplication()">📨 Відправити відгук</button>
+        <button class="btn btn-secondary" onclick="restart()">🔄 Почати знову</button>
+        <button class="btn btn-primary" onclick="downloadPDF()">📥 Завантажити PDF</button>
+      </div>
+
+      <div class="resume-card" id="resumeCard">
+        <div class="resume-watermark">${buildWatermark()}</div>
+        <div class="resume-content">
+          <div class="resume-top">
+            ${photoHtml}
+            <div class="resume-header-text">
+              <div class="resume-name">${escapeHtml(data.fullName)}</div>
+              <div class="resume-position-line">${escapeHtml(data.vacancy)}</div>
+              <div class="resume-contacts">${contactsHtml}</div>
+            </div>
+          </div>
+
+          <div class="resume-section">
+            <div class="resume-section-title">Досвід роботи</div>
+            ${expHtml}
+          </div>
+
+          <div class="resume-section">
+            <div class="resume-section-title">Освіта</div>
+            ${eduHtml}
+          </div>
+
+          ${englishRowHtml}
+
+          ${vipExtrasHtml}
+
+          <div class="resume-section">
+            <div class="resume-section-title">Навички</div>
+            <div class="resume-text-block">${escapeHtml(data.skills)}</div>
+          </div>
+
+          <div class="resume-section">
+            <div class="resume-section-title">Технічне забезпечення</div>
+            <div class="resume-equipment-grid">
+              <div class="resume-eq-row"><span class="resume-eq-label">Тип ПК:</span><span class="resume-eq-value">${escapeHtml(data.pcType)}</span></div>
+              <div class="resume-eq-row"><span class="resume-eq-label">ОС:</span><span class="resume-eq-value">${escapeHtml(data.os)}</span></div>
+              <div class="resume-eq-row"><span class="resume-eq-label">Живлення:</span><span class="resume-eq-value">${escapeHtml(powerStr)}</span></div>
+              <div class="resume-eq-row"><span class="resume-eq-label">Інтернет:</span><span class="resume-eq-value">${escapeHtml(data.internet)}</span></div>
+            </div>
+          </div>
+
+          ${
+            data.extra && data.extra.trim()
+              ? `
+          <div class="resume-section">
+            <div class="resume-section-title">Хобі</div>
+            <div class="resume-text-block">${escapeHtml(data.extra)}</div>
+          </div>`
+              : ""
+          }
+
+          <div class="resume-footer">
+            Резюме згенеровано з допомогою конструктора резюме від monobank
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+      }
+
+      function restart() {
+        // Новий прохід квесту — новий candidateId, щоб contact-етап знову
+        // надіслався і не переплутався з рядком попередньої спроби.
+        data.candidateId = generateCandidateId();
+        contactStageSent = false;
+        Object.assign(data, {
+          hasResume: "",
+          resumeLink: "",
+          vacancy: "",
+          fullName: "",
+          dobDay: "",
+          dobMonth: "",
+          dobYear: "",
+          phone: "",
+          telegram: "",
+          email: "",
+          city: "",
+          englishLevel: "",
+          vipTravel: "",
+          vipBookingServices: "",
+          vipPremiumExp: "",
+          experience: [{ company: "", position: "", years: "", duties: "" }],
+          noExperience: false,
+          education: [{ institution: "", specialty: "", years: "" }],
+          noEducation: false,
+          skills: "",
+          pcType: "",
+          os: "",
+          power: "",
+          powerHours: "",
+          internet: "",
+          extra: "",
+          photo: "",
+        });
+        currentStep = 0;
+        renderQuestion();
+      }
+
+      // ============================================================
+      // PDF
+      // ============================================================
+      async function downloadPDF() {
+        const btn = event.target;
+        const original = btn.textContent;
+        btn.textContent = "⏳ Генерація...";
+        btn.disabled = true;
+        try {
+          const element = document.getElementById("resumeCard");
+          const PDF_WIDTH_PX = 800;
+
+          // Тимчасово вмикаємо desktop-вигляд резюме — щоб PDF на мобільному виглядав так само як на компʼютері
+          element.classList.add("pdf-rendering");
+          // Дай браузеру кадр, щоб застосувати стилі перед canvas
+          await new Promise((r) =>
+            requestAnimationFrame(() => requestAnimationFrame(r)),
+          );
+
+          let canvas;
+          try {
+            canvas = await html2canvas(element, {
+              scale: 2,
+              backgroundColor: "#ffffff",
+              useCORS: true,
+              windowWidth: PDF_WIDTH_PX,
+              width: PDF_WIDTH_PX,
+            });
+          } finally {
+            element.classList.remove("pdf-rendering");
+          }
+
+          const { jsPDF } = window.jspdf;
+          const pageWidthMm = 210;
+          const a4HeightMm = 297;
+
+          // Висота "сторінкового вікна" в пікселях canvas — точно A4-пропорція від ширини
+          const pageHeightPx = Math.round(
+            canvas.width * (a4HeightMm / pageWidthMm),
+          );
+
+          const pdf = new jsPDF("p", "mm", "a4");
+          let renderedPx = 0;
+          let pageIndex = 0;
+
+          while (renderedPx < canvas.height) {
+            const sliceHeight = Math.min(
+              pageHeightPx,
+              canvas.height - renderedPx,
+            );
+
+            // Створюємо canvas-вікно для цієї сторінки. Розмір — точно A4-пропорція,
+            // навіть якщо контенту менше: нижня частина залишається білою.
+            const pageCanvas = document.createElement("canvas");
+            pageCanvas.width = canvas.width;
+            pageCanvas.height = pageHeightPx;
+            const ctx = pageCanvas.getContext("2d");
+            ctx.fillStyle = "#ffffff";
+            ctx.fillRect(0, 0, pageCanvas.width, pageCanvas.height);
+            ctx.drawImage(
+              canvas,
+              0,
+              renderedPx,
+              canvas.width,
+              sliceHeight, // src
+              0,
+              0,
+              canvas.width,
+              sliceHeight, // dst
+            );
+
+            const pageData = pageCanvas.toDataURL("image/png");
+            if (pageIndex > 0) pdf.addPage();
+            pdf.addImage(pageData, "PNG", 0, 0, pageWidthMm, a4HeightMm);
+
+            renderedPx += sliceHeight;
+            pageIndex++;
+          }
+
+          const filename =
+            "Resume_" +
+            (data.fullName.replace(/\s+/g, "_") || "Candidate") +
+            ".pdf";
+          pdf.save(filename);
+        } catch (e) {
+          alert("Помилка при створенні PDF: " + e.message);
+        } finally {
+          btn.textContent = original;
+          btn.disabled = false;
+        }
+      }
+
+      // ============================================================
+      // SEND
+      // ============================================================
+      function buildFingerprint() {
+        // Простий fingerprint для серверного rate-limit. Без зовнішніх бібліотек.
+        // Не для ідентифікації — лише щоб однотипні автоматизовані скрипти ловились в одну корзину.
+        const parts = [
+          navigator.userAgent || "",
+          navigator.language || "",
+          (navigator.languages || []).join(","),
+          new Date().getTimezoneOffset(),
+          screen.width + "x" + screen.height,
+          screen.colorDepth || 0,
+          navigator.hardwareConcurrency || 0,
+        ].join("|");
+        let h = 0;
+        for (let i = 0; i < parts.length; i++)
+          h = ((h << 5) - h + parts.charCodeAt(i)) | 0;
+        return "fp_" + (h >>> 0).toString(36);
+      }
+
+      function buildPayload() {
+        const dobIso =
+          data.dobDay && data.dobMonth && data.dobYear
+            ? `${String(data.dobDay).padStart(2, "0")}.${String(data.dobMonth).padStart(2, "0")}.${data.dobYear}`
+            : "";
+        const age = calculateAge(data.dobDay, data.dobMonth, data.dobYear);
+
+        // Гілка «Так, вже маю» не проходить кроки досвіду/освіти/навичок/VIP-питань — вони лишаються
+        // в data з дефолтними порожніми записами, тож не серіалізуємо їх у payload.
+        // Кроки ПК/живлення/інтернету вона ПРОХОДИТЬ — тож ці поля серіалізуються завжди.
+        const isReadyResume = data.hasResume === HAS_RESUME_YES;
+
+        const eduStr = isReadyResume
+          ? ""
+          : data.noEducation
+            ? "Без вищої освіти"
+            : data.education
+                .map((e) =>
+                  `${e.institution} — ${e.specialty} (${e.years})`.trim(),
+                )
+                .filter(Boolean)
+                .join("\n");
+
+        let expStr = isReadyResume
+          ? ""
+          : data.noExperience
+            ? "Без досвіду роботи"
+            : data.experience
+                .map((e) => {
+                  const head =
+                    `${e.position} — ${e.company} (${e.years})`.trim();
+                  return e.duties && e.duties.trim()
+                    ? `${head}\n${e.duties.trim()}`
+                    : head;
+                })
+                .filter(Boolean)
+                .join("\n\n");
+
+        if (!isReadyResume) {
+          if (data.englishLevel) {
+            expStr +=
+              (expStr ? "\n\n" : "") + `Англійська: ${data.englishLevel}`;
+          }
+          if (data.vipTravel) {
+            expStr +=
+              (expStr ? "\n\n" : "") + `Подорожі за кордон: ${data.vipTravel}`;
+          }
+          if (data.vipBookingServices) {
+            expStr +=
+              (expStr ? "\n\n" : "") +
+              `Сервіси бронювання: ${data.vipBookingServices}`;
+          }
+          if (data.vipPremiumExp) {
+            expStr +=
+              (expStr ? "\n\n" : "") +
+              `Досвід у преміальному сервісі: ${data.vipPremiumExp}`;
+          }
+        }
+
+        return {
+          stage: "final",
+          candidateId: data.candidateId,
+          token: FORM_TOKEN,
+          sheet: "Фестиваль",
+          origin: window.location.origin,
+          hp: (document.getElementById("hp_website") || {}).value || "",
+          elapsed: Date.now() - FORM_OPENED_AT,
+          fp: buildFingerprint(),
+          hasResume: data.hasResume,
+          resumeLink: data.resumeLink,
+          fullName: data.fullName,
+          dob: dobIso,
+          age: age,
+          phone: data.phone,
+          telegram: data.telegram,
+          email: data.email,
+          city: data.city,
+          vacancy: data.vacancy,
+          experience: expStr,
+          education: eduStr,
+          skills: isReadyResume ? "" : data.skills,
+          pcType: data.pcType,
+          os: data.os,
+          power: data.power,
+          powerHours: data.powerHours,
+          internet: data.internet,
+          extra: isReadyResume ? "" : data.extra,
+          englishLevel: isReadyResume ? "" : data.englishLevel,
+        };
+      }
+
+      // Зменшений payload для contact-етапу — лише candidateId + поля сторінки 1
+      // (питання «Контактні дані») + стандартні анти-спам поля.
+      function buildContactStagePayload() {
+        const dobIso =
+          data.dobDay && data.dobMonth && data.dobYear
+            ? `${String(data.dobDay).padStart(2, "0")}.${String(data.dobMonth).padStart(2, "0")}.${data.dobYear}`
+            : "";
+        return {
+          stage: "contact",
+          candidateId: data.candidateId,
+          token: FORM_TOKEN,
+          sheet: "Фестиваль",
+          origin: window.location.origin,
+          hp: (document.getElementById("hp_website") || {}).value || "",
+          elapsed: Date.now() - FORM_OPENED_AT,
+          fp: buildFingerprint(),
+          fullName: data.fullName,
+          dob: dobIso,
+          age: calculateAge(data.dobDay, data.dobMonth, data.dobYear),
+          phone: data.phone,
+          telegram: data.telegram,
+          email: data.email,
+          city: data.city,
+        };
+      }
+
+      // Найкраще зусилля: надсилає контактні дані одразу після сторінки 1, щоб
+      // вони завжди потрапили в таблицю навіть якщо кандидат не дійде до кінця.
+      // Fire-and-forget — не блокує перехід на наступний крок, не показує помилок.
+      async function sendContactStage() {
+        if (contactStageSent) return;
+        contactStageSent = true; // ставимо ДО спроб відправки — захист від дублю при даблкліку/поверненні на крок 0
+        if (!SCRIPT_URL) return;
+
+        const form = new URLSearchParams();
+        form.append("payload", JSON.stringify(buildContactStagePayload()));
+
+        for (let attempt = 0; attempt < 2; attempt++) {
+          try {
+            const resp = await fetch(SCRIPT_URL, {
+              method: "POST",
+              body: form,
+            });
+            const res = await resp.json().catch(() => ({}));
+            if (res && (res.status === "ok" || res.status === "queued")) return;
+          } catch (e) {
+            // тиша — спробуємо ще раз (якщо є спроба), інакше просто здаємось
+          }
+        }
+      }
+
+      async function sendApplication() {
+        const btn = document.getElementById("sendBtn");
+        if (!btn) return;
+        if (btn.dataset.sent === "1") return;
+        const original = btn.textContent;
+        btn.disabled = true;
+
+        if (!SCRIPT_URL) {
+          btn.textContent = original;
+          btn.disabled = false;
+          alert("Не налаштований SCRIPT_URL");
+          return;
+        }
+
+        const form = new URLSearchParams();
+        form.append("payload", JSON.stringify(buildPayload()));
+
+        // Експоненційний backoff із джиттером — захищає від штормів запитів
+        const attempts = [
+          { wait: 0, label: "⏳ Відправка..." },
+          { wait: 1000, label: "⏳ Повтор #1..." },
+          { wait: 3000, label: "⏳ Повтор #2..." },
+          { wait: 8000, label: "⏳ Повтор #3..." },
+        ];
+
+        for (let i = 0; i < attempts.length; i++) {
+          const a = attempts[i];
+          if (a.wait > 0) {
+            const jitter = Math.floor(Math.random() * a.wait * 0.4); // ±20%
+            await new Promise((r) => setTimeout(r, a.wait + jitter));
+          }
+          btn.textContent = a.label;
+          try {
+            const resp = await fetch(SCRIPT_URL, {
+              method: "POST",
+              body: form,
+            });
+            const res = await resp.json().catch(() => ({}));
+            if (res && (res.status === "ok" || res.status === "queued")) {
+              btn.dataset.sent = "1";
+              btn.textContent = "✅ Відправлено";
+              clearPending();
+              applicationSubmitted = true; // вимикає beforeunload/exit-модалку (п.4)
+              showSuccessModal();
+              return;
+            }
+            // якщо сервер відповів конкретним помилковим повідомленням — не ретраїмо
+            if (
+              res &&
+              res.status === "error" &&
+              res.message &&
+              /token|sheet|fields/i.test(res.message)
+            ) {
+              throw new Error(res.message);
+            }
+            // інакше — ретраїмо
+          } catch (e) {
+            if (i === attempts.length - 1) {
+              savePending(form.toString());
+              btn.textContent = original;
+              btn.disabled = false;
+              alert(
+                "Сервер тимчасово недоступний. Дані збережено у браузері — спробуй ще раз через хвилину натиснувши «Відправити відгук».",
+              );
+              return;
+            }
+          }
+        }
+        // після всіх спроб
+        savePending(form.toString());
+        btn.textContent = original;
+        btn.disabled = false;
+        alert(
+          "Сервер перевантажений. Дані збережено — натисни «Відправити відгук» ще раз через хвилину.",
+        );
+      }
+
+      function savePending(formStr) {
+        try {
+          localStorage.setItem("mono_pending_resume", formStr);
+        } catch (e) {}
+      }
+      function clearPending() {
+        try {
+          localStorage.removeItem("mono_pending_resume");
+        } catch (e) {}
+      }
+
+      function showSuccessModal() {
+        const overlay = document.createElement("div");
+        overlay.className = "modal-overlay";
+        overlay.innerHTML = `
+    <div class="modal-box">
+      <div class="modal-icon">✅</div>
+      <div class="modal-title">Відгук отримано!</div>
+      <div class="modal-text">
+        Дякуємо!<br><br>
+        Твій відгук на вакансію <b>«${escapeHtml(data.vacancy)}»</b> успішно отримано.<br><br>
+        📞Просимо очікувати зворотного зв'язку щодо розгляду твоєї кандидатури<br>
+        📬Відповідь може прийти на пошту, тому стеж за папкою спам
+      </div>
+      <button class="btn btn-primary" onclick="this.closest('.modal-overlay').remove()" style="max-width: 220px; margin: 0 auto;">Зрозуміло</button>
+    </div>
+  `;
+        document.body.appendChild(overlay);
+        overlay.addEventListener("click", (e) => {
+          if (e.target === overlay) overlay.remove();
+        });
+      }
+
+      // ============================================================
+      // ЗАКРИТТЯ БЕЗ ЗАВЕРШЕННЯ (п.4)
+      // ============================================================
+      function hideProgress() {
+        const el = document.getElementById("progressContainer");
+        if (el) el.style.display = "none";
+      }
+      function showProgress() {
+        const el = document.getElementById("progressContainer");
+        if (el) el.style.display = "";
+      }
+
+      // Sentinel-запис історії — один на кожен відвіданий крок. Дозволяє
+      // перехопити натискання кнопки "Назад" у браузері через popstate,
+      // замість того, щоб кандидат реально залишив сторінку.
+      function pushHistoryStep() {
+        try {
+          history.pushState({ step: currentStep }, "", "");
+        } catch (e) {}
+      }
+
+      window.addEventListener("popstate", function () {
+        if (currentStep > 0 && !applicationSubmitted) {
+          pushHistoryStep(); // "скасовуємо" навігацію назад, поки кандидат не підтвердив
+          showExitConfirmModal();
+        }
+      });
+
+      window.addEventListener("beforeunload", function (e) {
+        if (currentStep > 0 && !applicationSubmitted) {
+          e.preventDefault();
+          e.returnValue = ""; // текст діалогу контролює сам браузер
+        }
+      });
+
+      function showExitConfirmModal() {
+        if (document.querySelector(".exit-confirm-overlay")) return; // не плодити дублі
+        const overlay = document.createElement("div");
+        overlay.className = "modal-overlay exit-confirm-overlay";
+        overlay.innerHTML = `
+    <div class="modal-box">
+      <div class="modal-icon">⚠️</div>
+      <div class="modal-title">Зачекай!</div>
+      <div class="modal-text">Ви не завершили заповнення. Впевнені в тому, що не хоче завершити?</div>
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <button class="btn btn-primary" id="exitContinueBtn">Продовжити заповнення</button>
+        <button class="btn btn-secondary" id="exitCloseBtn">Закрити генератор</button>
+      </div>
+    </div>
+  `;
+        document.body.appendChild(overlay);
+        overlay
+          .querySelector("#exitContinueBtn")
+          .addEventListener("click", () => overlay.remove());
+        overlay.querySelector("#exitCloseBtn").addEventListener("click", () => {
+          overlay.remove();
+          closeGenerator();
+        });
+      }
+
+      // "Закрити генератор": window.close() спрацює лише якщо вкладку відкрито
+      // скриптом (рідкісний випадок) — тому водночас показуємо зрозумілий
+      // завершальний екран замість застряглої форми чи порожньої сторінки.
+      function closeGenerator() {
+        applicationSubmitted = true; // більше не питати при подальших спробах вийти
+        window.close();
+        hideProgress();
+        const container = document.getElementById("questContainer");
+        container.innerHTML = `
+    <div class="quest-card final-screen">
+      <div class="quest-icon">👋</div>
+      <div class="quest-question">Дякуємо за увагу, можете закрити цю сторінку.</div>
+    </div>
+  `;
+      }
+
+      // ============================================================
+      // ЗАВАНТАЖЕННЯ / «НЕМАЄ ВАКАНСІЙ» (п.2)
+      // ============================================================
+      function renderLoadingScreen() {
+        hideProgress();
+        const container = document.getElementById("questContainer");
+        container.innerHTML = `
+    <div class="quest-card">
+      <div class="quest-icon">⏳</div>
+      <div class="quest-question">Завантаження...</div>
+    </div>
+  `;
+      }
+
+      function renderNoVacanciesScreen() {
+        hideProgress();
+        const container = document.getElementById("questContainer");
+        container.innerHTML = `
+    <div class="quest-card">
+      <div class="quest-icon">☺️</div>
+      <div class="quest-question">Наразі немає активних вакансій ☺️</div>
+    </div>
+  `;
+      }
+
+      function renderLoadErrorScreen() {
+        hideProgress();
+        const container = document.getElementById("questContainer");
+        container.innerHTML = `
+    <div class="quest-card">
+      <div class="quest-icon">⚠️</div>
+      <div class="quest-question">Не вдалося завантажити вакансії. Оновіть сторінку та спробуйте ще раз.</div>
+    </div>
+  `;
+      }
+
+      async function init() {
+        data.candidateId = generateCandidateId();
+        pushHistoryStep();
+        renderLoadingScreen();
+
+        const result = await loadVacanciesAwaited();
+        if (result.fetchSucceeded && result.list.length === 0) {
+          renderNoVacanciesScreen();
+          return; // глухий кінець — квест не рендериться взагалі
+        }
+        if (!result.fetchSucceeded) {
+          renderLoadErrorScreen();
+          return;
+        }
+        vacanciesList = result.list;
+
+        showProgress();
+        renderQuestion();
+      }
+
+      init();
+    </script>
+  
+
+</body></html>
